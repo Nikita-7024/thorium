@@ -1,6 +1,67 @@
 const express = require('express');
 const router = express.Router();
 
+let persons= [
+        {
+        name: "PK",
+        age: 10,
+        votingStatus: false
+    },
+    {
+        name: "SK",
+        age: 20,
+        votingStatus: false
+    },
+    {
+        name: "AA",
+        age: 70,
+        votingStatus: false
+    },
+    {
+        name: "SC",
+        age: 5,
+        votingStatus: false
+    },
+    {
+        name: "HO",
+        age: 40,
+        votingStatus: false
+    }
+    ]
+
+    router.get('/status', function(req,res){
+        const votingAge = req.query.votingAge
+        const personRes = persons.filter(data => data.age > votingAge ? data.votingAge = true : data.votingAge = false);
+        res.send(personRes)
+    });
+    
+    
+    module.exports = router;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // QUERY PARAMS
 // localhost:3000/get-query-1?myCoolVar=24&xyz=hiFunctionUP
 router.get("/get-query-1", function (req, res) {
@@ -50,36 +111,4 @@ router.post("/post-query-2", function (req, res) {
 // also return an array consisting of only the person that can vote
 
 //  take this as sample for array of persons:
-// let persons= [
-//     {
-//     name: "PK",
-//     age: 10,
-//     votingStatus: false
-// },
-// {
-//     name: "SK",
-//     age: 20,
-//     votingStatus: false
-// },
-// {
-//     name: "AA",
-//     age: 70,
-//     votingStatus: false
-// },
-// {
-//     name: "SC",
-//     age: 5,
-//     votingStatus: false
-// },
-// {
-//     name: "HO",
-//     age: 40,
-//     votingStatus: false
-// }
-// ]
-
-
-
-
-
-module.exports = router;
+// 
