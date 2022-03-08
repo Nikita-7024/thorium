@@ -15,6 +15,13 @@ const userSchema = new mongoose.Schema( {
         enum: ["male", "female", "other"]
     },
     age: Number,
+    isDeleted:{type: Boolean, default:false}
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema)
+
+
+
+
+
+// mongodb+srv://users-open-to-all:hiPassword123@cluster0.uh35t.mongodb.net/nikita-7024-DB?retryWrites=true&w=majority"
