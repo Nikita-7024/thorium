@@ -51,8 +51,8 @@ const updateUser = async function (req, res) {
     return res.send("No such user exists");
   }
 
-  // let userData = req.body;
-  let updatedUser = await userModel.findOneAndUpdate({ _id: userId },{password: 12345678}, {new:true});
+  // let userData = req.body
+  let updatedUser = await userModel.findOneAndUpdate({ _id: userId },{password: 123450056}, {new:true});
   res.send({ status: updatedUser, data: updatedUser });
 };
 
@@ -69,8 +69,40 @@ const deleteUserData = async function(req,res){
   res.send({ status: deletedUserData, data: deletedUserData });
 }
 
+
+const postMessage = async function (req, res) {
+  let message = req.body.message
+  // Check if the token is present
+  // Check if the token present is a valid token
+  // Return a different error message in both these cases
+  let token = req.headers["x-auth-token"]
+  if(!token) return res.send({status: false, msg: "token must be present in the request header"})
+  let decodedToken = jwt.verify(token, 'nikitasingh')
+
+  if(!decodedToken) return res.send({status: false, msg:"token is not valid"})
+  
+
+  let userToBeModified = req.params.userId
+  let userLoggedIn = decodedToken.userId
+
+  if(userToBeModified != userLoggedIn) return res.send({status: false, msg: 'User logged is not allowed to modify the requested users data'})
+
+  let user = await userModel.findById(req.params.userId)
+  if(!user) return res.send({status: false, msg: 'No such user exists'})
+  
+  let updatedPosts = user.posts
+  
+  updatedPosts.push(message)
+  let updatedUser = await userModel.findOneAndUpdate({_id: user._id},{posts: updatedPosts}, {new: true})
+
+
+  return res.send({status: true, data: updatedUser})
+}
+
+
 module.exports.createUser = createUser;
 module.exports.getUserData = getUserData;
 module.exports.updateUser = updateUser;
 module.exports.loginUser = loginUser;
 module.exports.deleteUserData = deleteUserData 
+module.exports.postMessage = postMessage

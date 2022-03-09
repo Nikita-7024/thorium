@@ -19,4 +19,17 @@ const validateToken = async function (req, res, next) {
   next();
 };
 
+
+const authorise = async function(req,res,next){
+  let decodedToken =  jwt.verify(req.headers["x-auth-token"], "nikitasingh");
+  console.log(decodedToken)
+  
+  if (decodedToken.userId != req.params.userId )
+    return res.send({ status: false, msg: "You can not able to change the token" });
+  next();
+
+}
+
+
 module.exports.validateToken = validateToken;
+module.exports.authorise = authorise;
