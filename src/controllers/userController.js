@@ -2,12 +2,21 @@ const jwt = require("jsonwebtoken");
 const userModel = require("../models/userModel");
 
 const createUser = async function (abcd, xyz) {
+  try{
   let data = abcd.body;
+  console.log(data)
+  if(Object.keys(data).length !=0){
   let savedData = await userModel.create(data);
-  xyz.send({ msg: savedData });
+  xyz.status(201).send({msg: savedData})
+  }
+  }
+  catch (error){
+  xyz.status(500).send({ msg: "error", error:error.message});
+  }
 };
 
 const loginUser = async function (req, res) {
+  try{
   let userName = req.body.emailId;
   let password = req.body.password;
 
@@ -17,13 +26,19 @@ const loginUser = async function (req, res) {
       status: false,
       msg: "username or the password is not corerct",
     });
-
+  
   let token = jwt.sign({userId: user._id.toString()},"nikitasingh");
   res.setHeader("x-auth-token", token);
-  res.send({ status: true, data: token });
+  }
+
+  catch(error){
+  res.status(500).send({ status: true, data: token, error: error.message });
+  }
+
 };
 
 const getUserData = async function (req, res) {
+  try{
   let token = req.headers["x-Auth-token"];
   if (!token) token = req.headers["x-auth-token"];
 
@@ -38,39 +53,49 @@ const getUserData = async function (req, res) {
   let userId = req.params.userId;
   let userDetails = await userModel.findById(userId);
   if (!userDetails)
-    return res.send({ status: false, msg: "No such user exists" });
-
-  res.send({ status: true, data: userDetails });
+    return res.status(404).send({ status: false, msg: "No such user exists" });
+  }
+  catch(error){
+  res.status(500).send({ status: true, data: userDetails, error:error.message });
+  }
 };
 
 const updateUser = async function (req, res) {
+  try{
   let userId = req.params.userId;
   let user = await userModel.findById(userId);
   //Return an error if no user with the given id exists in the db
   if (!user) {
-    return res.send("No such user exists");
+    return res.status(404).send("No such user exists");
   }
-
-  // let userData = req.body
+  }
+  catch(error){
+  
   let updatedUser = await userModel.findOneAndUpdate({ _id: userId },{password: 123450056}, {new:true});
-  res.send({ status: updatedUser, data: updatedUser });
+  res.status(500).send({ status: updatedUser, data: updatedUser });
+  }
 };
 
 const deleteUserData = async function(req,res){
+  try{
   let userId = req.params.userId;
   let user = await userModel.findById(userId);
 
   if (!user) {
-    return res.send("user must be deleted");
+    return res.status(200).send("user must be deleted");
   }
+  }
+  catch(error){
 
   // let userData = req.params.
   let deletedUserData = await userModel.findByIdAndUpdate({_id: userId}, {$set:{isDeleted:true}}, {new:true});
-  res.send({ status: deletedUserData, data: deletedUserData });
+  res.status(500).send({ status: deletedUserData, data: deletedUserData });
+  }
 }
 
 
 const postMessage = async function (req, res) {
+  try{
   let message = req.body.message
   // Check if the token is present
   // Check if the token present is a valid token
@@ -94,9 +119,11 @@ const postMessage = async function (req, res) {
   
   updatedPosts.push(message)
   let updatedUser = await userModel.findOneAndUpdate({_id: user._id},{posts: updatedPosts}, {new: true})
+  }
+  catch(error){
 
-
-  return res.send({status: true, data: updatedUser})
+    return res.status(500).send({status: true, data: updatedUser})
+  }
 }
 
 
